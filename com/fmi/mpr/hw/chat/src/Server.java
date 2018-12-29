@@ -95,12 +95,38 @@ private void closestuff() {
 	}
 }
 
+//send a message to client
+private void sendmessage(String message) {
+	try {
+		output.writeObject("SERVER - "+ message);
+		output.flush();
+		showmessage("\n Server - "+message);
+	}catch(IOException ioException) {
+		chatwindow.append("\n Message cant be sent");
+	}
+}
 
+//updating the chat
+private void showmessage(final String text) {
+	SwingUtilities.invokeLater(
+			new Runnable(){
+				public void run() {
+					chatwindow.append(text);
+				}
+			}
+			);
+}
 
-
-
-
-
+//letting the user tipe
+private void abletotype(final boolean tof){
+	SwingUtilities.invokeLater(
+			new Runnable(){
+				public void run() {
+					usertext.setEditable(tof);
+				}
+			}
+			);
+}
 
 
 
