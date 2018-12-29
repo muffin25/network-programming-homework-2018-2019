@@ -71,13 +71,61 @@ public class Client extends JFrame{
 		abletotype(true);
 		do {
 			try {
-				message=(String)input.defaultReadObject();
+				message=(String)input.readObject();
 				showmessage("\n"+message);
 			}catch(ClassNotFoundException classNotFoundException) {
 				showmessage("\n Unknown data sent by server");
 			}
-		}while(!message.equal("SERVER - END"));
+		}while(!message.equals("SERVER - END"));
 	}
+	
+	//closing the streams and sockets
+	private void closestuff() {
+		showmessage("\n closing eveything down");
+		abletotype(false);
+		try {
+			output.close();
+			input.close();
+			connection.close();
+		}catch(IOException ioException) {
+			ioException.printStackTrace();
+		}
+	}
+	
+	//send messages to server
+	private void sendmessage(String message) {
+		try {
+			output.writeObject("CLIENT - " + message);
+			output.flush();
+			showmessage("\nCLIENT - " + message);	
+		}catch(IOException ioException) {
+			chatwindow.append("\n message could not be sent");
+		}
+	}
+	
+	//updating the chat
+	private void showmessage(final String m) {
+		SwingUtilities.invokeLater(
+				new Runnable(){
+					public void run() {
+						chatwindow.append(m);
+					}
+				}
+				);
+	}
+
+	//letting the user tipe
+	private void abletotype(final boolean tof){
+		SwingUtilities.invokeLater(
+				new Runnable(){
+					public void run() {
+						usertext.setEditable(tof);
+					}
+				}
+				);
+	}
+
+	
 	
 	
 }
