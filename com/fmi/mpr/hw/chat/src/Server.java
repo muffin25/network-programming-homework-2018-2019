@@ -33,4 +33,25 @@ public Server()
 	setSize(450,200);
 	setVisible(true);
 }
+
+//setting up the server
+public void startrunning()
+{
+try
+{
+server = new ServerSocket(6789,10);
+while(true)
+{
+try {
+waitforconnection();
+setupstreams();
+whilechatting();
+}catch(EOFException eofException) {showmessage("\n Server ended the connection.");
+}finally{closestuff();
+}
+}
+}catch(IOException ioException) { ioException.printStackTrace();}
+}
+
+
 }
