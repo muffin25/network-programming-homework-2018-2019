@@ -24,7 +24,7 @@ public class Client extends JFrame{
 		usertext.addActionListener(
                new  ActionListener(){
 					public void actionPerformed(ActionEvent event) {
-						senddata(event.getActionCommand());
+						sendmessage(event.getActionCommand());
 						usertext.setText("");
 					}
 				}
@@ -34,6 +34,28 @@ public class Client extends JFrame{
 		add(new JScrollPane(chatwindow),BorderLayout.CENTER);
 		setSize(450,200);
 		setVisible(true);
+	}
+	
+	//running
+	public void startrunning() {
+		try {
+			connecttoserver();
+			setupstreams();
+			whilechatting():
+		}catch(EOFException eofException) {
+			showmessage("\n Client terminated connection");
+		}catch(IOException ioException) {
+			ioException.printStackTrace():
+		}finally {
+			closestuff();
+		}
+	}
+	
+	//connecting to server
+	private void connecttoserver() throws IOException{
+		showmessage("Attempting connection.\n");
+		connection=new Socket(InetAddress.getByName(serverIP),6789);
+        showmessage("Connected to:"+ connection.getInetAddress().getHostName());
 	}
 	
 	
