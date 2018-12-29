@@ -58,7 +58,26 @@ public class Client extends JFrame{
         showmessage("Connected to:"+ connection.getInetAddress().getHostName());
 	}
 	
+	//setting up streams
+	private void setupstream() throws IOException{
+		output = new ObjectOutputStream(connection.getOutputStream());
+		output.flush();
+		input = new ObjectInputStream(connection.getInputStream());
+		showmessage("\n Streams are set up. \n");	
+	}
 	
+	//while chatting
+	private void whilechatting() throws IOException{
+		abletotype(true);
+		do {
+			try {
+				message=(String)input.defaultReadObject();
+				showmessage("\n"+message);
+			}catch(ClassNotFoundException classNotFoundException) {
+				showmessage("\n Unknown data sent by server");
+			}
+		}while(!message.equal("SERVER - END"));
+	}
 	
 	
 }
