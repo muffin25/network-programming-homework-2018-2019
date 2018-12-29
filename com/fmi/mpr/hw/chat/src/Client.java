@@ -41,11 +41,11 @@ public class Client extends JFrame{
 		try {
 			connecttoserver();
 			setupstreams();
-			whilechatting():
+			whilechatting();
 		}catch(EOFException eofException) {
 			showmessage("\n Client terminated connection");
 		}catch(IOException ioException) {
-			ioException.printStackTrace():
+			ioException.printStackTrace();
 		}finally {
 			closestuff();
 		}
@@ -59,7 +59,7 @@ public class Client extends JFrame{
 	}
 	
 	//setting up streams
-	private void setupstream() throws IOException{
+	private void setupstreams() throws IOException{
 		output = new ObjectOutputStream(connection.getOutputStream());
 		output.flush();
 		input = new ObjectInputStream(connection.getInputStream());
@@ -114,7 +114,7 @@ public class Client extends JFrame{
 				);
 	}
 
-	//letting the user tipe
+	//letting the user type
 	private void abletotype(final boolean tof){
 		SwingUtilities.invokeLater(
 				new Runnable(){
