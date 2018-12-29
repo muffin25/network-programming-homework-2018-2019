@@ -53,5 +53,28 @@ whilechatting();
 }catch(IOException ioException) { ioException.printStackTrace();}
 }
 
+//wait for connection , then display info
+private void waitforconnection() throws IOException{
+	showmessage("Waiting for someone to connect.\n");
+	connection=server.accept(); 
+	showmessage("Now connected to" + connection.getInetAddress().getHostName());
+}
+
+//get stream
+private void setupstreams() throws IOException{
+	output= new ObjectOutputStream(connection.getOutputStream());
+	output.flush();
+	input=new ObjectInputStream(connection.getInputStream());
+	showmessage("\n Streams are set up. \n");
+}
+
+
+
+
+
+
+
+
+
 
 }
