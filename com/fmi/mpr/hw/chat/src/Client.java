@@ -14,15 +14,23 @@ public class Client extends JFrame
 	private String message = "";
 	private String serverIP;
 	private DatagramSocket serversocket;
+	private MulticastSocket multicastsocket;
 	private InetAddress IPAddress ;
+	private InetAddress group;
 	
 	//constructor
-	public Client(String host) throws UnknownHostException {
+	public Client(String host) 
+	{
 		super("Client");
 		serverIP=host;
 		receiveData = new byte [1024];
-	    sendData = new byte [1024];
-	    IPAddress = InetAddress.getByName(serverIP);
+	    sendData = new byte [1024]; 
+	    try {
+	    	group = InetAddress.getByName("225.4.5.6");
+			IPAddress = InetAddress.getByName(serverIP);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 		usertext=new JTextField();
 		usertext.setEditable(false);
 		usertext.addActionListener(
@@ -45,6 +53,8 @@ public class Client extends JFrame
 	public void startrunning()
 	{
 	try{
+		multicastsocket=new MulticastSocket(1234);
+		multicastsocket.joinGroup(group);
 		serversocket = new DatagramSocket();
 		while(true){
 			try{
@@ -65,8 +75,8 @@ public class Client extends JFrame
 		abletotype(true);
 		do {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		    serversocket.receive(receivePacket);
-		    String message = new String( receivePacket.getData(),0, receivePacket.getLength());
+		    multicastsocket.receive(receivePacket);
+		    message = new String( receivePacket.getData(),0, receivePacket.getLength());
 		    showmessage("\n"+message);
 			}while(true);
 	}
@@ -76,6 +86,7 @@ public class Client extends JFrame
 		showmessage("\n closing eveything down");
 		abletotype(false);
 		serversocket.close();
+		multicastsocket.close();
 	}
 	
 	//send messages to server

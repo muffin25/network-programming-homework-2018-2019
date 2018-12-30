@@ -13,6 +13,8 @@ private String message = "";
 private JTextField usertext;
 private JTextArea chatwindow;
 private DatagramSocket serversocket;
+private MulticastSocket multicastsocket;
+private InetAddress group;
 
 // constructor
 public Server()
@@ -20,6 +22,11 @@ public Server()
 	super("Message server");
 	receiveData = new byte [1024];
     sendData = new byte [1024];
+    try {
+		group = InetAddress.getByName("225.4.5.6");
+	} catch (UnknownHostException e) {
+		e.printStackTrace();
+	}
 	usertext = new JTextField();
 	usertext.setEditable(false);
 	usertext.addActionListener(new ActionListener() {
@@ -39,6 +46,7 @@ public Server()
 	public void startrunning()
 	{
 	try{
+		multicastsocket=new MulticastSocket();
 		serversocket = new DatagramSocket(6789);
 		while(true){
 			try{
@@ -61,15 +69,14 @@ private void whilechatting() throws IOException{
 	do {
 	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
     serversocket.receive(receivePacket);
-    String message = new String( receivePacket.getData(),0, receivePacket.getLength());
-    InetAddress IPAddress = receivePacket.getAddress();
+    message = new String( receivePacket.getData(),0, receivePacket.getLength());
     int port = receivePacket.getPort();
-    showmessage("\n"+IPAddress+" - "+port + " - "+message);
+    showmessage("\n"+port + " - "+message);
     
     sendData=(port+" - "+message).getBytes();
     DatagramPacket sendPacket =
-    new DatagramPacket(sendData, sendData.length,IPAddress , port);
-    serversocket.send(sendPacket);
+    new DatagramPacket(sendData, sendData.length,group , 1234);
+    multicastsocket.send(sendPacket);
     
     
     
