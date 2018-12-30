@@ -19,9 +19,10 @@ public class Client extends JFrame
 	private InetAddress group;
 	
 	//constructor
-	public Client(String host) 
+	public Client(String host, String name) 
 	{
-		super("Client");
+		super(name);
+		new File(name).mkdir();
 		serverIP=host;
 		receiveData = new byte [1024];
 	    sendData = new byte [1024]; 
@@ -73,12 +74,31 @@ public class Client extends JFrame
 	//while chatting
 	private void whilechatting() throws IOException{
 		abletotype(true);
-		do {
+		//do {
+
+			File f2 =new File("Charlie\\kitty.jpg");
+			FileInputStream bis = new FileInputStream(f2);
+			byte[] buf = new byte[63*1024];
+			int len;
+
+			DatagramPacket pkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
+			while((len=bis.read(buf))!=-1)
+			{
+			serversocket.send(pkg);
+			}
+			buf = "end".getBytes();
+			DatagramPacket endpkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
+			System.out.println("Send the file.");
+			serversocket.send(endpkg);
+			bis.close();
+			
+			/*
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 		    multicastsocket.receive(receivePacket);
 		    message = new String( receivePacket.getData(),0, receivePacket.getLength());
 		    showmessage("\n"+message);
-			}while(true);
+		    */
+			//}while(true);
 	}
 	
 	//closing everything

@@ -20,6 +20,7 @@ private InetAddress group;
 public Server()
 {
 	super("Message server");
+	new File("Server").mkdir();
 	receiveData = new byte [1024];
     sendData = new byte [1024];
     try {
@@ -67,6 +68,33 @@ public Server()
 private void whilechatting() throws IOException{
 	abletotype(true);
 	do {
+	
+		File f1 = new File("Server\\kitty.jpg");
+		//f1.createNewFile();
+		FileOutputStream bos = new FileOutputStream(f1,true);
+		byte[] buf = new byte[63*1024];
+		DatagramPacket pkg = new DatagramPacket(buf, buf.length);
+
+		while(true)
+		{
+		serversocket.receive(pkg);
+		if (new String(pkg.getData(), 0, pkg.getLength()).equals("end")) 
+		{ 
+		System.out.println("Documents received");
+		bos.close();
+	    break;
+		}
+		message = new String (pkg.getData(), 0, pkg.getLength());
+		showmessage(message);
+		bos.write(pkg.getData(), 0, pkg.getLength());
+		bos.flush(); 
+		}
+		bos.close();
+		
+		
+		
+		
+	/*	
 	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
     serversocket.receive(receivePacket);
     message = new String( receivePacket.getData(),0, receivePacket.getLength());
@@ -77,6 +105,7 @@ private void whilechatting() throws IOException{
     DatagramPacket sendPacket =
     new DatagramPacket(sendData, sendData.length,group , 1234);
     multicastsocket.send(sendPacket);
+    */
     
     
     
