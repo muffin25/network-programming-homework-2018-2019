@@ -5,20 +5,24 @@ import java.awt.event.*;
 import javax.swing.*;
 
 
-public class Client extends JFrame{
-
+public class Client extends JFrame
+{
+	byte[] receiveData;
+	byte[] sendData ;	
 	private JTextField usertext;
 	private JTextArea chatwindow;
-	private ObjectOutputStream output;
-	private ObjectInputStream input;
 	private String message = "";
 	private String serverIP;
-	private Socket connection;
+	private DatagramSocket serversocket;
+	private InetAddress IPAddress ;
 	
 	//constructor
-	public Client(String host) {
+	public Client(String host) throws UnknownHostException {
 		super("Client");
 		serverIP=host;
+		receiveData = new byte [1024];
+	    sendData = new byte [1024];
+	    IPAddress = InetAddress.getByName(serverIP);
 		usertext=new JTextField();
 		usertext.setEditable(false);
 		usertext.addActionListener(
@@ -36,71 +40,56 @@ public class Client extends JFrame{
 		setVisible(true);
 	}
 	
+	
 	//running
-	public void startrunning() {
-		try {
-			connecttoserver();
-			setupstreams();
-			whilechatting();
-		}catch(EOFException eofException) {
-			showmessage("\n Client terminated connection");
-		}catch(IOException ioException) {
-			ioException.printStackTrace();
-		}finally {
-			closestuff();
+	public void startrunning()
+	{
+	try{
+		serversocket = new DatagramSocket();
+		while(true){
+			try{
+				whilechatting();
+			}catch(EOFException eofException){
+				showmessage("\n Server ended the connection! ");
+			} finally{
+				closestuff(); 
+			}
 		}
+	} catch (IOException ioException){
+		ioException.printStackTrace();
 	}
-	
-	//connecting to server
-	private void connecttoserver() throws IOException{
-		showmessage("Attempting connection.\n");
-		connection=new Socket(InetAddress.getByName(serverIP),6789);
-        showmessage("Connected to:"+ connection.getInetAddress().getHostName());
-	}
-	
-	//setting up streams
-	private void setupstreams() throws IOException{
-		output = new ObjectOutputStream(connection.getOutputStream());
-		output.flush();
-		input = new ObjectInputStream(connection.getInputStream());
-		showmessage("\n Streams are set up. \n");	
 	}
 	
 	//while chatting
 	private void whilechatting() throws IOException{
 		abletotype(true);
 		do {
-			try {
-				message=(String)input.readObject();
-				showmessage("\n"+message);
-			}catch(ClassNotFoundException classNotFoundException) {
-				showmessage("\n Unknown data sent by server");
-			}
-		}while(!message.equals("SERVER - END"));
+			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+		    serversocket.receive(receivePacket);
+		    String message = new String( receivePacket.getData(),0, receivePacket.getLength());
+		    showmessage("\n"+message);
+			}while(true);
 	}
 	
-	//closing the streams and sockets
+	//closing everything
 	private void closestuff() {
 		showmessage("\n closing eveything down");
 		abletotype(false);
-		try {
-			output.close();
-			input.close();
-			connection.close();
-		}catch(IOException ioException) {
-			ioException.printStackTrace();
-		}
+		serversocket.close();
 	}
 	
 	//send messages to server
-	private void sendmessage(String message) {
-		try {
-			output.writeObject("CLIENT - " + message);
-			output.flush();
-			showmessage("\nCLIENT - " + message);	
-		}catch(IOException ioException) {
-			chatwindow.append("\n message could not be sent");
+	private void sendmessage(String message) 
+	{
+		sendData=message.getBytes();
+		try{
+		DatagramPacket sendPacket =
+			    new DatagramPacket(sendData, sendData.length, IPAddress, 6789);
+			    serversocket.send(sendPacket);
+		}catch(IOException ioException){
+			chatwindow.append("\n ERROR: CANNOT SEND MESSAGE, PLEASE RETRY");
 		}
+			
 	}
 	
 	//updating the chat

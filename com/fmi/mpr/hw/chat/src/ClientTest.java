@@ -1,7 +1,9 @@
+import java.net.UnknownHostException;
+
 import javax.swing.JFrame;
 
 public class ClientTest {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws UnknownHostException {
 		Client charlie;
 		charlie = new Client("127.0.0.1");
 		charlie.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
