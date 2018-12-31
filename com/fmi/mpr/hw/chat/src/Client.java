@@ -91,16 +91,17 @@ public class Client extends JFrame
 		    if(message.contentEquals("Sending...")&&(sending==true))
 		    {
 		     String filename=gettingmessage();
-		     multicastsocket.leaveGroup(group);
 		     sendingfile(filename);
-		     multicastsocket.joinGroup(group);
+		     sending=false;
 		    }
 		    
 		    
 		    
 		    
 		    if(message.contentEquals("File sent"))
+		    	{
 		    	abletotype(true);
+		    	}
 		    
 			}while(true);
 	}
@@ -128,8 +129,6 @@ public class Client extends JFrame
 		File f1 = new File(name+"\\"+filename);
 		//f1.createNewFile();
 		boolean exists = f1.exists();
-		if(exists==false)
-		{
 		FileOutputStream bos = new FileOutputStream(f1,true);
 		byte[] b = new byte[63*1024];
 		DatagramPacket p = new DatagramPacket(b, b.length);
@@ -143,11 +142,14 @@ public class Client extends JFrame
 		bos.close();
 	    break;
 		}
+		if(exists==false) 
+		{
 		bos.write(p.getData(), 0, p.getLength());
+		}
 		bos.flush(); 
 		}
 		bos.close();
-		}
+		
 	}
 	
 	

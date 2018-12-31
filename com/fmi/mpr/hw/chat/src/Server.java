@@ -122,11 +122,11 @@ private void workingwithfile() throws IOException
 	
 	//receiving file from client
     int n=0;
+    
 	File f1 = new File("Server\\"+filename);
 	//f1.createNewFile();
 	boolean exists = f1.exists();
-	if(exists==false)
-	{
+	
 	FileOutputStream bos = new FileOutputStream(f1,true);
 	byte[] buf = new byte[63*1024];
 	DatagramPacket pkg = new DatagramPacket(buf, buf.length);
@@ -141,11 +141,14 @@ private void workingwithfile() throws IOException
 	bos.close();
     break;
 	}
+	if(exists==false) 
+	{
 	bos.write(pkg.getData(), 0, pkg.getLength());
+	}
 	bos.flush(); 
 	}
 	bos.close();
-	}
+	
 
 
    //sending file to all clients
@@ -153,16 +156,16 @@ private void workingwithfile() throws IOException
 	
 	File f2 =new File("Server\\"+filename);
 	FileInputStream bis = new FileInputStream(f2);
-	byte[] buf = new byte[63*1024];
+	byte[] buf2 = new byte[63*1024];
 	int len;
 
-	DatagramPacket pkg = new DatagramPacket(buf, buf.length,group,1234);
-	while((len=bis.read(buf))!=-1)
+	DatagramPacket pkg2 = new DatagramPacket(buf2, buf2.length,group,1234);
+	while((len=bis.read(buf2))!=-1)
 	{
-	serversocket.send(pkg);
+	serversocket.send(pkg2);
 	}
-	buf = "end".getBytes();
-	DatagramPacket endpkg = new DatagramPacket(buf, buf.length,group,1234);
+	buf2 = "end".getBytes();
+	DatagramPacket endpkg = new DatagramPacket(buf2, buf2.length,group,1234);
 	System.out.println("Send the file.");
 	multicastsocket.send(endpkg);
 	bis.close();	
