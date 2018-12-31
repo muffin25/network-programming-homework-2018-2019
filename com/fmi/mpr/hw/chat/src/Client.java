@@ -17,11 +17,13 @@ public class Client extends JFrame
 	private MulticastSocket multicastsocket;
 	private InetAddress IPAddress ;
 	private InetAddress group;
+	private String name;
 	
 	//constructor
-	public Client(String host, String name) 
+	public Client(String host, String n) 
 	{
-		super(name);
+		super(n);
+		name=n;
 		new File(name).mkdir();
 		serverIP=host;
 		receiveData = new byte [1024];
@@ -75,8 +77,9 @@ public class Client extends JFrame
 	private void whilechatting() throws IOException{
 		abletotype(true);
 		//do {
-
-			File f2 =new File("Charlie\\kitty.jpg");
+			//sending file to server
+			/*
+			File f2 =new File("Charlie\\123.txt");
 			FileInputStream bis = new FileInputStream(f2);
 			byte[] buf = new byte[63*1024];
 			int len;
@@ -90,7 +93,39 @@ public class Client extends JFrame
 			DatagramPacket endpkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
 			System.out.println("Send the file.");
 			serversocket.send(endpkg);
-			bis.close();
+			bis.close();	*/
+			
+		
+		
+		//receiving file from server
+			/*
+			do {
+
+				File f1 = new File(name+"\\123.txt");
+				//f1.createNewFile();
+				boolean exists = f1.exists();
+				if(exists==false)
+				{
+				FileOutputStream bos = new FileOutputStream(f1,true);
+				byte[] b = new byte[63*1024];
+				DatagramPacket p = new DatagramPacket(b, b.length);
+
+				while(true)
+				{
+				multicastsocket.receive(p);
+				if (new String(p.getData(), 0, p.getLength()).equals("end")) 
+				{ 
+				System.out.println("Documents received");
+				bos.close();
+			    break;
+				}
+				bos.write(p.getData(), 0, p.getLength());
+				bos.flush(); 
+				}
+				bos.close();
+				}
+			}while(true);*/
+			
 			
 			/*
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);

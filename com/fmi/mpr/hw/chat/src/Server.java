@@ -67,10 +67,17 @@ public Server()
 //while the conversation is active
 private void whilechatting() throws IOException{
 	abletotype(true);
-	do {
+	int n=0;
 	
-		File f1 = new File("Server\\kitty.jpg");
+	//receiving file from client
+	/*
+	do {
+
+		File f1 = new File("Server\\123.txt");
 		//f1.createNewFile();
+		boolean exists = f1.exists();
+		if(exists==false)
+		{
 		FileOutputStream bos = new FileOutputStream(f1,true);
 		byte[] buf = new byte[63*1024];
 		DatagramPacket pkg = new DatagramPacket(buf, buf.length);
@@ -80,18 +87,39 @@ private void whilechatting() throws IOException{
 		serversocket.receive(pkg);
 		if (new String(pkg.getData(), 0, pkg.getLength()).equals("end")) 
 		{ 
+			n=1;
 		System.out.println("Documents received");
 		bos.close();
 	    break;
 		}
-		message = new String (pkg.getData(), 0, pkg.getLength());
-		showmessage(message);
 		bos.write(pkg.getData(), 0, pkg.getLength());
 		bos.flush(); 
 		}
 		bos.close();
+		}
 		
-		
+	}while(n==0);
+	*/
+	
+	//sending file to all clients
+	
+		/*
+		File f2 =new File("Server\\123.txt");
+		FileInputStream bis = new FileInputStream(f2);
+		byte[] buf = new byte[63*1024];
+		int len;
+
+		DatagramPacket pkg = new DatagramPacket(buf, buf.length,group,1234);
+		while((len=bis.read(buf))!=-1)
+		{
+		serversocket.send(pkg);
+		}
+		buf = "end".getBytes();
+		DatagramPacket endpkg = new DatagramPacket(buf, buf.length,group,1234);
+		System.out.println("Send the file.");
+		multicastsocket.send(endpkg);
+		bis.close();	
+		*/
 		
 		
 	/*	
@@ -109,7 +137,7 @@ private void whilechatting() throws IOException{
     
     
     
-	}while(true);
+	//}while(true);
 }
 
 
