@@ -18,12 +18,14 @@ public class Client extends JFrame
 	private InetAddress IPAddress ;
 	private InetAddress group;
 	private String name;
+	private boolean sending;
 	
 	//constructor
 	public Client(String host, String n) 
 	{
 		super(n);
 		name=n;
+		sending=false;
 		new File(name).mkdir();
 		serverIP=host;
 		receiveData = new byte [1024];
@@ -39,7 +41,7 @@ public class Client extends JFrame
 		usertext.addActionListener(
                new  ActionListener(){
 					public void actionPerformed(ActionEvent event) {
-						sendmessage(event.getActionCommand());
+						send(event.getActionCommand());
 						usertext.setText("");
 					}
 				}
@@ -76,64 +78,102 @@ public class Client extends JFrame
 	//while chatting
 	private void whilechatting() throws IOException{
 		abletotype(true);
-		//do {
-			//sending file to server
-			/*
-			File f2 =new File("Charlie\\123.txt");
-			FileInputStream bis = new FileInputStream(f2);
-			byte[] buf = new byte[63*1024];
-			int len;
-
-			DatagramPacket pkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
-			while((len=bis.read(buf))!=-1)
-			{
-			serversocket.send(pkg);
-			}
-			buf = "end".getBytes();
-			DatagramPacket endpkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
-			System.out.println("Send the file.");
-			serversocket.send(endpkg);
-			bis.close();	*/
+		do {
+		    message=gettingmessage();
 			
-		
-		
+		    if(message.contentEquals("Sending...")&&(sending==false))
+		    {
+		     abletotype(false);
+		     String filename=gettingmessage();
+		     gettingfile(filename);
+		    }
+		    
+		    if(message.contentEquals("Sending...")&&(sending==true))
+		    {
+		     String filename=gettingmessage();
+		     multicastsocket.leaveGroup(group);
+		     sendingfile(filename);
+		     multicastsocket.joinGroup(group);
+		    }
+		    
+		    
+		    
+		    
+		    if(message.contentEquals("File sent"))
+		    	abletotype(true);
+		    
+			}while(true);
+	}
+	
+	
+	
+	private String gettingmessage() throws IOException
+	{
+		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+	    multicastsocket.receive(receivePacket);
+	    message = new String( receivePacket.getData(),0, receivePacket.getLength());
+	    showmessage("\n"+message);
+	    return message;
+	}
+	
+	
+	
+	
+	private void gettingfile(String filename) throws IOException
+	{
 		//receiving file from server
-			/*
-			do {
+		
+		int n=0;
+		
+		File f1 = new File(name+"\\"+filename);
+		//f1.createNewFile();
+		boolean exists = f1.exists();
+		if(exists==false)
+		{
+		FileOutputStream bos = new FileOutputStream(f1,true);
+		byte[] b = new byte[63*1024];
+		DatagramPacket p = new DatagramPacket(b, b.length);
 
-				File f1 = new File(name+"\\123.txt");
-				//f1.createNewFile();
-				boolean exists = f1.exists();
-				if(exists==false)
-				{
-				FileOutputStream bos = new FileOutputStream(f1,true);
-				byte[] b = new byte[63*1024];
-				DatagramPacket p = new DatagramPacket(b, b.length);
+		while(n==0)
+		{
+		multicastsocket.receive(p);
+		if (new String(p.getData(), 0, p.getLength()).equals("end")) 
+		{ 
+			n=1;
+		bos.close();
+	    break;
+		}
+		bos.write(p.getData(), 0, p.getLength());
+		bos.flush(); 
+		}
+		bos.close();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	private void sendingfile(String filename) throws IOException
+	{
+		//sending file to server
+		
+		File f2 =new File(name+"\\"+filename);
+		FileInputStream bis = new FileInputStream(f2);
+		byte[] buf = new byte[63*1024];
+		int len;
 
-				while(true)
-				{
-				multicastsocket.receive(p);
-				if (new String(p.getData(), 0, p.getLength()).equals("end")) 
-				{ 
-				System.out.println("Documents received");
-				bos.close();
-			    break;
-				}
-				bos.write(p.getData(), 0, p.getLength());
-				bos.flush(); 
-				}
-				bos.close();
-				}
-			}while(true);*/
-			
-			
-			/*
-			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-		    multicastsocket.receive(receivePacket);
-		    message = new String( receivePacket.getData(),0, receivePacket.getLength());
-		    showmessage("\n"+message);
-		    */
-			//}while(true);
+		DatagramPacket pkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
+		while((len=bis.read(buf))!=-1)
+		{
+		serversocket.send(pkg);
+		}
+		buf = "end".getBytes();
+		DatagramPacket endpkg = new DatagramPacket(buf, buf.length,InetAddress.getByName("127.0.0.1"),6789);
+		System.out.println("Send the file.");
+		serversocket.send(endpkg);
+		bis.close();	
 	}
 	
 	//closing everything
@@ -145,7 +185,7 @@ public class Client extends JFrame
 	}
 	
 	//send messages to server
-	private void sendmessage(String message) 
+	private void sendmessage(String message)
 	{
 		sendData=message.getBytes();
 		try{
@@ -154,8 +194,24 @@ public class Client extends JFrame
 			    serversocket.send(sendPacket);
 		}catch(IOException ioException){
 			chatwindow.append("\n ERROR: CANNOT SEND MESSAGE, PLEASE RETRY");
+		}	
+	}
+	
+	
+	
+	private void send(String message) 
+	{
+		if(!message.contentEquals("Send file"))
+		{
+		sendmessage(message);
 		}
-			
+		else 
+		{
+		sending=true;
+		sendmessage(message);
+					
+		}
+				
 	}
 	
 	//updating the chat

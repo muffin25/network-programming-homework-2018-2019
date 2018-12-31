@@ -66,63 +66,22 @@ public Server()
 
 //while the conversation is active
 private void whilechatting() throws IOException{
-	abletotype(true);
-	int n=0;
 	
-	//receiving file from client
-	/*
 	do {
-
-		File f1 = new File("Server\\123.txt");
-		//f1.createNewFile();
-		boolean exists = f1.exists();
-		if(exists==false)
-		{
-		FileOutputStream bos = new FileOutputStream(f1,true);
-		byte[] buf = new byte[63*1024];
-		DatagramPacket pkg = new DatagramPacket(buf, buf.length);
-
-		while(true)
-		{
-		serversocket.receive(pkg);
-		if (new String(pkg.getData(), 0, pkg.getLength()).equals("end")) 
-		{ 
-			n=1;
-		System.out.println("Documents received");
-		bos.close();
-	    break;
-		}
-		bos.write(pkg.getData(), 0, pkg.getLength());
-		bos.flush(); 
-		}
-		bos.close();
-		}
-		
-	}while(n==0);
-	*/
 	
-	//sending file to all clients
+	message=workingmessage();
 	
-		/*
-		File f2 =new File("Server\\123.txt");
-		FileInputStream bis = new FileInputStream(f2);
-		byte[] buf = new byte[63*1024];
-		int len;
+    
+    if(message.contentEquals("Send file"))
+    {
+    	workingwithfile();
+    }
+    
+	}while(true);
+}
 
-		DatagramPacket pkg = new DatagramPacket(buf, buf.length,group,1234);
-		while((len=bis.read(buf))!=-1)
-		{
-		serversocket.send(pkg);
-		}
-		buf = "end".getBytes();
-		DatagramPacket endpkg = new DatagramPacket(buf, buf.length,group,1234);
-		System.out.println("Send the file.");
-		multicastsocket.send(endpkg);
-		bis.close();	
-		*/
-		
-		
-	/*	
+private String workingmessage() throws IOException
+{
 	DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
     serversocket.receive(receivePacket);
     message = new String( receivePacket.getData(),0, receivePacket.getLength());
@@ -133,13 +92,91 @@ private void whilechatting() throws IOException{
     DatagramPacket sendPacket =
     new DatagramPacket(sendData, sendData.length,group , 1234);
     multicastsocket.send(sendPacket);
-    */
-    
-    
-    
-	//}while(true);
+    return message;
 }
 
+
+
+
+
+private void workingwithfile() throws IOException
+{
+	
+	String message1="Sending...";
+	sendData=(message1).getBytes();
+    DatagramPacket sendPacket1 =
+    new DatagramPacket(sendData, sendData.length,group , 1234);
+    multicastsocket.send(sendPacket1);
+    
+    DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
+    serversocket.receive(receivePacket);
+    String filename = new String( receivePacket.getData(),0, receivePacket.getLength());
+    showmessage(filename);
+    
+    sendData=(filename).getBytes();
+    DatagramPacket sendPacket =
+    new DatagramPacket(sendData, sendData.length,group , 1234);
+    multicastsocket.send(sendPacket);
+	
+	
+	
+	//receiving file from client
+    int n=0;
+	File f1 = new File("Server\\"+filename);
+	//f1.createNewFile();
+	boolean exists = f1.exists();
+	if(exists==false)
+	{
+	FileOutputStream bos = new FileOutputStream(f1,true);
+	byte[] buf = new byte[63*1024];
+	DatagramPacket pkg = new DatagramPacket(buf, buf.length);
+
+	while(n==0)
+	{
+	serversocket.receive(pkg);
+	if (new String(pkg.getData(), 0, pkg.getLength()).equals("end")) 
+	{ 
+		n=1;
+	System.out.println("Documents received");
+	bos.close();
+    break;
+	}
+	bos.write(pkg.getData(), 0, pkg.getLength());
+	bos.flush(); 
+	}
+	bos.close();
+	}
+
+
+   //sending file to all clients
+
+	
+	File f2 =new File("Server\\"+filename);
+	FileInputStream bis = new FileInputStream(f2);
+	byte[] buf = new byte[63*1024];
+	int len;
+
+	DatagramPacket pkg = new DatagramPacket(buf, buf.length,group,1234);
+	while((len=bis.read(buf))!=-1)
+	{
+	serversocket.send(pkg);
+	}
+	buf = "end".getBytes();
+	DatagramPacket endpkg = new DatagramPacket(buf, buf.length,group,1234);
+	System.out.println("Send the file.");
+	multicastsocket.send(endpkg);
+	bis.close();	
+	
+	
+	
+	
+	
+	String message2="File sent";
+	sendData=(message2).getBytes();
+    DatagramPacket sendPacket2 =
+    new DatagramPacket(sendData, sendData.length,group , 1234);
+    multicastsocket.send(sendPacket2);
+}
 
 //updating the chat
 private void showmessage(final String text) {
