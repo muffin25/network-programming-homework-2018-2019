@@ -77,25 +77,28 @@ public class Client extends JFrame
 	
 	//while chatting
 	private void whilechatting() throws IOException{
+		boolean s=true;
 		abletotype(true);
 		do {
-		    message=gettingmessage();
+		    message=gettingmessage(s);
 			
 		    if(message.contentEquals("Sending...")&&(sending==false))
 		    {
 		     abletotype(false);
-		     String filename=gettingmessage();
+		     String filename=gettingmessage(s);
 		     gettingfile(filename);
 		    }
 		    
 		    if(message.contentEquals("Sending...")&&(sending==true))
 		    {
-		     String filename=gettingmessage();
+		     String filename=gettingmessage(s);
 		     sendingfile(filename);
 		     sending=false;
+		     s=false;
 		    }
 		    
-		    
+		    if(message.contentEquals("end"))
+		    	s=true;
 		    
 		    
 		    if(message.contentEquals("File sent"))
@@ -108,12 +111,14 @@ public class Client extends JFrame
 	
 	
 	
-	private String gettingmessage() throws IOException
+	private String gettingmessage(boolean s) throws IOException
 	{
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 	    multicastsocket.receive(receivePacket);
 	    message = new String( receivePacket.getData(),0, receivePacket.getLength());
+	    if(s) {
 	    showmessage("\n"+message);
+	    }
 	    return message;
 	}
 	
