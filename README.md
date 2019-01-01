@@ -1,7 +1,13 @@
+
+My chat application:
+It works by first runnung the servertest class to activate the chat server, then running the other 3 client test classes to add clients to the chat.Each client will get his desicnated folder in witch there are some files.The clients type a message and send it to the server, after that the server sends the message to all clients with the port number of the client infront.If one client types "Send file" the server will return "Sending..." and all other clients wont be able to type any more.The client that is sending then needs to enter the name of a file in his folder(only the name of his file) that is smaller than 63kbytes(its a udp server so i want it to be small).After entering the name the client will auto send the file to the server, and then the server will send it to all clients, creating files with the same name in their folders.(The file must not already exist in them).If all goes well then a File sent message will appear and everyone will be able to type again.
+
 # Chat Application using multicasting 
 You need to implement a multicast chat application in which each participant can send and 
 receive chat messages from all other participants. Before sending message the participant 
 must be asked by the programm what type of message he should send.[TEXT, IMAGE, VIDEO].
+
+
 
 # HTTP Server 
 You need to implement HTTP Server which can handle GET and POST methods. You can use some browser for the client side.
@@ -25,7 +31,6 @@ After you did the aforementioned steps you are ready to proceed.
 In order to create copy of the repository you should **fork** (Click Fork button in the top right corner) the repository.  By forking the repository you allow me to view the history of your work. (**Uploading the whole project functionality at once will count as cheating**).
 
 Now after you have copied the repository you can download it locally and start working on the task you have choosen.
-
 In order to download the project locally you need to use the following command:
 git clone https://github.com/YOUR_USERNAME/network-programming-homework-2018-2019.git
 
